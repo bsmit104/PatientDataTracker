@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-8yhff-eh6xhi@r^)jypk94guhyr+vng&n)**uz*lz8bq%-d0^d
 # ALLOWED_HOSTS = []
 DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'https://patientdatatracker.onrender.com']  # Replace later
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'patientdatatracker.onrender.com']
 
 # Application definition
 
