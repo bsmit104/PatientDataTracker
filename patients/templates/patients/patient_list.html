@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h1>Patient List</h1>
+    <ul>
+        {% for patient in patients %}
+            <li>{{ patient.name }} - {{ patient.age }} - {{ patient.condition }}</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'patient_chart' %}">View Chart</a>
+</body>
+</html>
