@@ -1,4 +1,116 @@
+{% extends 'patients/base.html' %}
+{% block title %}Patient Chart{% endblock %}
+{% block content %}
+    <h1 class="text-center mb-4">Patient Age by Condition</h1>
+    <canvas id="patientChart" width="400" height="200"></canvas>
+    <a href="{% url 'patient_list' %}" class="btn btn-custom mt-3">Back</a>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        fetch('/chart/', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(response => response.json())
+            .then(data => {
+                const ctx = document.getElementById('patientChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Age',
+                            data: data.ages,
+                            backgroundColor: 'var(--highlight)',
+                            borderColor: 'var(--accent)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: { scales: { y: { beginAtZero: true } } }
+                });
+            });
+    </script>
+{% endblock %}
+
+{% comment %} <!DOCTYPE html>
+<html>
+<head>
+    {% load django_bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Patient Chart</title>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">Patient Age by Condition</h1>
+        <canvas id="patientChart" width="400" height="200"></canvas>
+        <a href="{% url 'patient_list' %}" class="btn btn-secondary mt-3">Back</a>
+    </div>
+    <script>
+        fetch('/chart/', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(response => response.json())
+            .then(data => {
+                const ctx = document.getElementById('patientChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Age',
+                            data: data.ages,
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: { scales: { y: { beginAtZero: true } } }
+                });
+            });
+    </script>
+</body>
+</html> {% endcomment %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} 
 <!DOCTYPE html>
+<html>
+<head>
+    {% load django_bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <title>Patient Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">Patient Age by Condition</h1>
+        <img src="data:image/png;base64,{{ graphic }}" alt="Patient Chart" class="img-fluid">
+        <a href="{% url 'patient_list' %}" class="btn btn-secondary mt-3">Back to List</a>
+    </div>
+</body>
+</html> {% endcomment %}
+
+
+
+
+
+
+
+
+
+
+{% comment %} <!DOCTYPE html>
 <html>
 <body>
     <h1>Patient Age by Condition</h1>
@@ -6,4 +118,4 @@
     <br>
     <a href="{% url 'patient_list' %}">Back to List</a>
 </body>
-</html>
+</html> {% endcomment %}

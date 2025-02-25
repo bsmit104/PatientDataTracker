@@ -1,0 +1,45 @@
+{% extends 'patients/base.html' %}
+{% load django_bootstrap5 %}
+{% block title %}Patient: {{ patient.name }}{% endblock %}
+{% block content %}
+    <h1 class="text-center mb-4">Patient: {{ patient.name }}</h1>
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5>Current Info</h5>
+            <p><strong>Age:</strong> {{ patient.age }}</p>
+            <p><strong>Most Recent Diagnosis:</strong> {{ patient.recent_diagnosis }}</p>
+            <p><strong>Diagnosis Date:</strong> {{ patient.diagnosis_date }}</p>
+            <p><strong>Current Treatment:</strong> {{ patient.treatment|default:"None" }}</p>
+        </div>
+    </div>
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5>Allergens</h5>
+            <p>{{ patient.allergens|default:"None listed" }}</p>
+        </div>
+    </div>
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5>Past Diagnoses & Treatments</h5>
+            {% if past_records %}
+                <ul class="list-group">
+                    {% for diag, treat in past_records %}
+                        <li class="list-group-item">
+                            <strong>{{ diag }}</strong> - {{ treat|default:"No treatment" }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No past diagnoses recorded.</p>
+            {% endif %}
+        </div>
+    </div>
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5>Notes</h5>
+            <p>{{ patient.notes|default:"No notes" }}</p>
+        </div>
+    </div>
+    <a href="{% url 'patient_list' %}" class="btn btn-custom">Back to List</a>
+    <a href="{% url 'edit_patient' patient.pk %}" class="btn btn-custom">Edit Patient</a>
+{% endblock %}

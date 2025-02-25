@@ -1,0 +1,113 @@
+:root {
+    --bg: #F7F0F5;
+    --highlight: #DECBB7;
+    --text: #000000;
+    --accent: #5C5552;
+    --button: #433633;
+    --button-text: #F7F0F5;
+}
+[data-theme="dark"] {
+    --bg: #433633;
+    --highlight: #5C5552;
+    --text: #DECBB7;
+    --accent: #8F857D;
+    --button: #F7F0F5;
+    --button-text: #433633;
+}
+body {
+    background-color: var(--bg) !important;
+    color: var(--text) !important;
+    transition: all 0.3s ease;
+}
+.navbar {
+    background-color: var(--highlight) !important;
+}
+.navbar-brand, .nav-link {
+    color: var(--text) !important;
+}
+.btn-custom {
+    background-color: var(--button) !important;
+    color: var(--button-text) !important;
+    border: none !important;
+}
+.btn-custom:hover {
+    background-color: var(--accent) !important;
+}
+.list-group-item {
+    background-color: var(--highlight) !important;
+    color: var(--text) !important;
+    border-color: var(--accent) !important;
+}
+.list-group-item span {
+    margin-right: 10px; /* Tightens spacing */
+}
+.list-group-item:hover {
+    background-color: #e8d9c8 !important; /* Lightened #DECBB7 for hover */
+    transition: background-color 0.2s ease;
+}
+.container {
+    background-color: var(--bg) !important;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.theme-toggle {
+    position: fixed;
+    top: 60px; /* Move below navbar height (default ~50px + padding) */
+    right: 10px;
+    z-index: 1000;
+}
+
+
+/* :root {
+    --bg: #F7F0F5;
+    --highlight: #DECBB7;
+    --text: #8F857D;
+    --accent: #5C5552;
+    --button: #433633;
+    --button-text: #F7F0F5;
+}
+[data-theme="dark"] {
+    --bg: #433633;
+    --highlight: #5C5552;
+    --text: #DECBB7;
+    --accent: #8F857D;
+    --button: #F7F0F5;
+    --button-text: #433633;
+}
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    transition: all 0.3s ease;
+}
+.navbar {
+    background-color: var(--highlight);
+}
+.navbar-brand, .nav-link {
+    color: var(--text) !important;
+}
+.btn-custom {
+    background-color: var(--button);
+    color: var(--button-text);
+    border: none;
+}
+.btn-custom:hover {
+    background-color: var(--accent);
+    color: var(--button-text);
+}
+.list-group-item {
+    background-color: var(--highlight);
+    color: var(--text);
+    border-color: var(--accent);
+}
+.container {
+    background-color: var(--bg);
+    padding: 20px;
+    border-radius: 8px;
+}
+.theme-toggle {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+} */

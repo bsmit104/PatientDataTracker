@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load django_bootstrap5 %}
+    {% load static %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <title>{% block title %}Patient Tracker{% endblock %}</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'patient_list' %}">Patient Tracker</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'patient_list' %}">Patients</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'patient_chart' %}">Chart</a></li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'add_patient' %}">Add Patient</a></li>
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <form method="post" action="{% url 'logout' %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="nav-link btn btn-custom">Logout</button>
+                            </form>
+                        </li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <button class="btn btn-custom theme-toggle" id="themeToggle">Toggle Theme</button>
+    <div class="container mt-4">
+        {% block content %}{% endblock %}
+    </div>
+    <script>
+        const toggle = document.getElementById('themeToggle');
+        const body = document.body;
+        toggle.addEventListener('click', () => {
+            body.dataset.theme = body.dataset.theme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('theme', body.dataset.theme);
+        });
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) body.dataset.theme = savedTheme;
+    </script>
+</body>
+</html>

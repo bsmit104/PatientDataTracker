@@ -1,0 +1,31 @@
+{% extends 'patients/base.html' %}
+{% load django_bootstrap5 %}
+{% block title %}Login{% endblock %}
+{% block content %}
+    <h1 class="text-center mb-4">Staff Login</h1>
+    <form method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <button type="submit" class="btn btn-custom">Login</button>
+    </form>
+{% endblock %}
+
+{% comment %} <!DOCTYPE html>
+<html>
+<head>
+    {% load django_bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <title>Login</title>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">Staff Login</h1>
+        <form method="post">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+    </div>
+</body>
+</html> {% endcomment %}
