@@ -16,6 +16,78 @@
             <button type="submit" class="btn btn-custom">Search</button>
         </div>
     </form>
+    <div class="row">
+        <div class="col-md-8">
+            <ul class="list-group">
+                {% for patient in patients %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>
+                            <a href="{% url 'patient_detail' patient.pk %}" class="text-decoration-none text-reset">{{ patient.name }}</a>
+                            - Age: {{ patient.age }} - {{ patient.recent_diagnosis }}
+                        </span>
+                        {% if user.is_authenticated %}
+                            <div>
+                                <a href="{% url 'edit_patient' patient.pk %}" class="btn btn-custom btn-sm">Edit</a>
+                                <a href="{% url 'delete_patient' patient.pk %}" class="btn btn-custom btn-sm">Delete</a>
+                            </div>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+            <a href="{% url 'patient_chart' %}" class="btn btn-custom mt-3">View Chart</a>
+        </div>
+        {% if user.is_authenticated %}
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5>Recently Viewed Patients</h5>
+                        <ul class="list-group">
+                            {% for patient in recently_viewed %}
+                                <li class="list-group-item">
+                                    <a href="{% url 'patient_detail' patient.pk %}" class="text-decoration-none text-reset">{{ patient.name }}</a>
+                                </li>
+                            {% empty %}
+                                <li class="list-group-item">None yet</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Recent Actions</h5>
+                        <ul class="list-group">
+                            {% for action in recent_actions %}
+                                <li class="list-group-item">{{ action.action|title }} {{ action.patient_name }} - {{ action.timestamp|timesince }} ago</li>
+                            {% empty %}
+                                <li class="list-group-item">No actions yet</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+
+{% comment %} {% extends 'patients/base.html' %}
+{% load django_bootstrap5 %}
+{% block title %}
+    Patient List
+{% endblock %}
+{% block content %}
+    <h1 class="text-center mb-4">Patient List</h1>
+    {% if user.is_authenticated %}
+        <h2 class="mb-3">Staff Area</h2>
+    {% else %}
+        <p class="text-muted">Log in to manage patients.</p>
+    {% endif %}
+    <form method="get" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search by name, condition, treatment, age, or date">
+            <button type="submit" class="btn btn-custom">Search</button>
+        </div>
+    </form>
     <ul class="list-group">
         {% for patient in patients %}
             <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -35,110 +107,5 @@
     <a href="{% url 'patient_chart' %}" class="btn btn-custom mt-3">View Chart</a>
 {% endblock %}
 
-{% comment %} {% extends 'patients/base.html' %}
-{% load django_bootstrap5 %}
-{% block title %}Patient List{% endblock %}
-{% block content %}
-    <h1 class="text-center mb-4">Patient List</h1>
-    {% if user.is_authenticated %}
-        <h2 class="mb-3">Staff Area</h2>
-    {% else %}
-        <p class="">Log in to manage patients.</p>
-    {% endif %}
-    <form method="get" class="mb-4">
-        <div class="input-group">
-            <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search by name, condition, treatment, age, or date">
-            <button type="submit" class="btn btn-custom">Search</button>
-        </div>
-    </form>
-    <ul class="list-group">
-        {% for patient in patients %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                {{ patient.name }} - Age: {{ patient.age }} - {{ patient.condition }}
-                {% if user.is_authenticated %}
-                    <div>
-                        <a href="{% url 'edit_patient' patient.pk %}" class="btn btn-custom btn-sm">Edit</a>
-                        <a href="{% url 'delete_patient' patient.pk %}" class="btn btn-custom btn-sm">Delete</a>
-                    </div>
-                {% endif %}
-            </li>
-        {% endfor %}
-    </ul>
-    <a href="{% url 'patient_chart' %}" class="btn btn-custom mt-3">View Chart</a>
-{% endblock %} {% endcomment %}
-
-
-
-
-
-
-{% comment %} {% extends 'patients/base.html' %}
-{% block title %}Patient List{% endblock %}
-{% block content %}
-    <h1 class="text-center mb-4">Patient List</h1>
-    {% if user.is_authenticated %}
-        <h2 class="mb-3">Staff Area</h2>
-    {% else %}
-        <p class="">Log in to manage patients.</p>
-    {% endif %}
-    <ul class="list-group">
-        {% for patient in patients %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                {{ patient.name }} - Age: {{ patient.age }} - {{ patient.condition }}
-                {% if user.is_authenticated %}
-                    <div>
-                        <a href="{% url 'edit_patient' patient.pk %}" class="btn btn-custom btn-sm">Edit</a>
-                        <a href="{% url 'delete_patient' patient.pk %}" class="btn btn-custom btn-sm">Delete</a>
-                    </div>
-                {% endif %}
-            </li>
-        {% endfor %}
-    </ul>
-    <a href="{% url 'patient_chart' %}" class="btn btn-custom mt-3">View Chart</a>
-{% endblock %} {% endcomment %}
-
-
-{% comment %} <!DOCTYPE html>
-<html>
-<head>
-    {% load django_bootstrap5 %}
-    {% bootstrap_css %}
-    {% bootstrap_javascript %}
-    <title>Patient Tracker</title>
-</head>
-<body>
-    <div class="container mt-4">
-        <h1 class="text-center mb-4">Patient List</h1>
-        {% if user.is_authenticated %}
-            <a href="{% url 'add_patient' %}" class="btn btn-success mb-3">Add Patient</a>
-            <form method="post" action="{% url 'logout' %}" style="display: inline;">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-secondary mb-3">Logout</button>
-            </form>
-        {% else %}
-            <p class="text-muted">Log in to manage patients.</p>
-        {% endif %}
-        <ul class="list-group">
-            {% for patient in patients %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    {{ patient.name }} - Age: {{ patient.age }} - {{ patient.condition }} - 
-            Diagnosed: {{ patient.diagnosis_date }} - Treatment: {{ patient.treatment|default:"None" }}
-                    {% if user.is_authenticated %}
-                        <div>
-                            <a href="{% url 'edit_patient' patient.pk %}" class="btn btn-warning btn-sm">Edit</a>
-                            <a href="{% url 'delete_patient' patient.pk %}" class="btn btn-danger btn-sm">Delete</a>
-                        </div>
-                    {% endif %}
-                </li>
-            {% endfor %}
-        </ul>
-        <a href="{% url 'patient_chart' %}" class="btn btn-primary mt-3">View Chart</a>
-        {% if not user.is_authenticated %}
-            <a href="{% url 'login' %}" class="btn btn-info mt-3">Staff Login</a>
-        {% endif %}
-    </div>
-</body>
-</html>
  {% endcomment %}
-
 
