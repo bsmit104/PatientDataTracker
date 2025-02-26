@@ -30,26 +30,3 @@ class Command(BaseCommand):
                 notes=fake.text(max_nb_chars=200) if random.random() > 0.5 else ""
             )
         self.stdout.write(self.style.SUCCESS('Mock data loaded successfully'))
-        
-# from django.core.management.base import BaseCommand
-# from patients.models import Patient
-# from faker import Faker
-# import random
-# from datetime import datetime, timedelta
-
-# class Command(BaseCommand):
-#     help = 'Loads mock patient data'
-
-#     def handle(self, *args, **options):
-#         fake = Faker()
-#         conditions = ["Flu", "Diabetes", "Hypertension", "Asthma"]
-#         treatments = ["Rest", "Insulin", "Medication", "Inhaler", ""]
-#         for _ in range(60):  # 60 fake patients
-#             Patient.objects.create(
-#                 name=fake.name(),
-#                 age=random.randint(18, 90),
-#                 condition=random.choice(conditions),
-#                 diagnosis_date=fake.date_between(start_date="-1y", end_date="today"),
-#                 treatment=random.choice(treatments)
-#             )
-#         self.stdout.write(self.style.SUCCESS('Mock data loaded successfully'))

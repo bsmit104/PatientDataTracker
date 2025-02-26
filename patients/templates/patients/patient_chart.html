@@ -1,121 +1,106 @@
 {% extends 'patients/base.html' %}
-{% block title %}Patient Chart{% endblock %}
+{% load django_bootstrap5 %}
+{% block title %}Patient Charts{% endblock %}
 {% block content %}
-    <h1 class="text-center mb-4">Patient Age by Condition</h1>
-    <canvas id="patientChart" width="400" height="200"></canvas>
-    <a href="{% url 'patient_list' %}" class="btn btn-custom mt-3">Back</a>
+    <h1 class="text-center mb-4">Patient Charts</h1>
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-6">
+            <select id="chartSelect" class="form-select">
+                <option value="bar" selected>Patients by Age Group (Bar)</option>
+                <option value="pie">Most Common Diagnoses (Pie)</option>
+                <option value="line">Registrations Over Time (Line)</option>
+                <option value="heatmap">Diagnoses by Age Group (Heatmap)</option>
+            </select>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center">
+        <div class="chart-container" style="position: relative; height: 350px; width: 80%; max-width: 800px;">
+            <canvas id="chartCanvas"></canvas>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        fetch('/chart/', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-            .then(response => response.json())
-            .then(data => {
-                const ctx = document.getElementById('patientChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: data.labels,
-                        datasets: [{
-                            label: 'Age',
-                            data: data.ages,
-                            backgroundColor: 'var(--highlight)',
-                            borderColor: 'var(--accent)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: { scales: { y: { beginAtZero: true } } }
+        let chartInstance = null;
+        const canvas = document.getElementById('chartCanvas');
+        const ctx = canvas.getContext('2d');
+        const select = document.getElementById('chartSelect');
+
+        function loadChart(type) {
+            if (chartInstance) chartInstance.destroy(); // Clear previous chart
+
+            fetch(`/chart/?type=${type}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(response => response.json())
+                .then(data => {
+                    let config;
+                    if (type === 'bar') {
+                        config = {
+                            type: 'bar',
+                            data: {
+                                labels: data.labels,
+                                datasets: [{
+                                    label: 'Patients',
+                                    data: data.counts,
+                                    backgroundColor: 'var(--highlight)',
+                                    borderColor: 'var(--accent)',
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: { scales: { y: { beginAtZero: true } } }
+                        };
+                    } else if (type === 'pie') {
+                        config = {
+                            type: 'pie',
+                            data: {
+                                labels: data.labels,
+                                datasets: [{
+                                    data: data.counts,
+                                    backgroundColor: ['#F7F0F5', '#DECBB7', '#8F857D', '#5C5552', '#433633', '#e8d9c8']
+                                }]
+                            }
+                        };
+                    } else if (type === 'line') {
+                        config = {
+                            type: 'line',
+                            data: {
+                                labels: data.labels,
+                                datasets: [{
+                                    label: 'Registrations',
+                                    data: data.counts,
+                                    borderColor: 'var(--button)',
+                                    fill: false
+                                }]
+                            },
+                            options: { scales: { y: { beginAtZero: true } } }
+                        };
+                    } else if (type === 'heatmap') {
+                        config = {
+                            type: 'bar',
+                            data: {
+                                labels: ['0-20', '21-40', '41-60', '61-80', '81+'],
+                                datasets: data.data.map((row, idx) => ({
+                                    label: row.diagnosis,
+                                    data: Object.values(row).slice(1),
+                                    backgroundColor: ['#F7F0F5', '#DECBB7', '#8F857D', '#5C5552', '#433633'][idx % 5]
+                                }))
+                            },
+                            options: {
+                                scales: {
+                                    x: { stacked: true },
+                                    y: { stacked: true, beginAtZero: true }
+                                }
+                            }
+                        };
+                    }
+                    chartInstance = new Chart(ctx, config);
                 });
-            });
+        }
+
+        // Load default chart
+        loadChart('bar');
+
+        // Update chart on selection
+        select.addEventListener('change', () => loadChart(select.value));
     </script>
 {% endblock %}
 
-{% comment %} <!DOCTYPE html>
-<html>
-<head>
-    {% load django_bootstrap5 %}
-    {% bootstrap_css %}
-    {% bootstrap_javascript %}
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <title>Patient Chart</title>
-</head>
-<body>
-    <div class="container mt-4">
-        <h1 class="text-center mb-4">Patient Age by Condition</h1>
-        <canvas id="patientChart" width="400" height="200"></canvas>
-        <a href="{% url 'patient_list' %}" class="btn btn-secondary mt-3">Back</a>
-    </div>
-    <script>
-        fetch('/chart/', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-            .then(response => response.json())
-            .then(data => {
-                const ctx = document.getElementById('patientChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: data.labels,
-                        datasets: [{
-                            label: 'Age',
-                            data: data.ages,
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: { scales: { y: { beginAtZero: true } } }
-                });
-            });
-    </script>
-</body>
-</html> {% endcomment %}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-{% comment %} 
-<!DOCTYPE html>
-<html>
-<head>
-    {% load django_bootstrap5 %}
-    {% bootstrap_css %}
-    {% bootstrap_javascript %}
-    <title>Patient Chart</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-    <div class="container mt-4">
-        <h1 class="text-center mb-4">Patient Age by Condition</h1>
-        <img src="data:image/png;base64,{{ graphic }}" alt="Patient Chart" class="img-fluid">
-        <a href="{% url 'patient_list' %}" class="btn btn-secondary mt-3">Back to List</a>
-    </div>
-</body>
-</html> {% endcomment %}
-
-
-
-
-
-
-
-
-
-
-{% comment %} <!DOCTYPE html>
-<html>
-<body>
-    <h1>Patient Age by Condition</h1>
-    <img src="data:image/png;base64,{{ graphic }}" alt="Patient Chart">
-    <br>
-    <a href="{% url 'patient_list' %}">Back to List</a>
-</body>
-</html> {% endcomment %}

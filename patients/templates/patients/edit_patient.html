@@ -10,24 +10,3 @@
     </form>
     <a href="{% url 'patient_list' %}" class="btn btn-custom mt-3">Back</a>
 {% endblock %}
-
-{% comment %} <!DOCTYPE html>
-<html>
-<head>
-    {% load django_bootstrap5 %}
-    {% bootstrap_css %}
-    {% bootstrap_javascript %}
-    <title>Edit Patient</title>
-</head>
-<body>
-    <div class="container mt-4">
-        <h1 class="text-center mb-4">Edit Patient: {{ patient.name }}</h1>
-        <form method="post">
-            {% csrf_token %}
-            {% bootstrap_form form %}
-            <button type="submit" class="btn btn-success">Save</button>
-        </form>
-        <a href="{% url 'patient_list' %}" class="btn btn-secondary mt-3">Back</a>
-    </div>
-</body>
-</html> {% endcomment %}

@@ -8,23 +8,3 @@
     </form>
     <a href="{% url 'patient_list' %}" class="btn btn-custom mt-3">Cancel</a>
 {% endblock %}
-
-{% comment %} <!DOCTYPE html>
-<html>
-<head>
-    {% load django_bootstrap5 %}
-    {% bootstrap_css %}
-    {% bootstrap_javascript %}
-    <title>Delete Patient</title>
-</head>
-<body>
-    <div class="container mt-4">
-        <h1 class="text-center mb-4">Delete Patient: {{ patient.name }}?</h1>
-        <form method="post">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Confirm Delete</button>
-        </form>
-        <a href="{% url 'patient_list' %}" class="btn btn-secondary mt-3">Cancel</a>
-    </div>
-</body>
-</html> {% endcomment %}
