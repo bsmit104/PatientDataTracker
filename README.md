@@ -4,7 +4,7 @@ A robust, Django-based web application for managing patient records, deployed on
 
 ## Demo Video
 
-[![PatientDataTracker Demo](https://img.youtube.com/vi/xgoSJBTjM2s/0.jpg)](https://www.youtube.com/watch?v=xgoSJBTjM2s)
+[![PatientDataTracker Demo](https://img.youtube.com/vi/xgoSJBTjM2s/0.jpg)](https://youtu.be/XxfaHredDv4)
 
 *Click the thumbnail above to watch a demo of the app in action!*
 
@@ -20,6 +20,9 @@ Explore the app live at: [https://patientdatatracker.onrender.com/](https://pati
 - **Interactive Charts**: Visualize data with Chart.js—bar (age groups), pie (top diagnoses), line (registrations over time), and heatmap (diagnoses by age), switchable via dropdown.
 - **Real-Time Insights**: Sidebar with recently viewed patients (top 5) and recent actions (last 7: add/edit/delete/view logs).
 - **Search Functionality**: Filter patients by name, recent diagnosis, treatment, age, or diagnosis date.
+- **Data Export**: Download patient records as CSV (staff-only).
+- **Edit History**: Track changes to patient records with user and timestamp logs (last 5 per patient).
+- **Dashboard Widgets**: Quick stats on patient list—total patients, average age, top diagnosis.
 - **Responsive Design**: Bootstrap-powered UI with dark/light mode toggle for accessibility.
 - **Mock Data**: 60 dynamically generated patients using Faker for testing and demo purposes.
 
