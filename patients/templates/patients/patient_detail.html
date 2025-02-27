@@ -40,6 +40,22 @@
             <p>{{ patient.notes|default:"No notes" }}</p>
         </div>
     </div>
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5>Edit History (Last 5)</h5>
+            {% if edit_history %}
+                <ul class="list-group">
+                    {% for entry in edit_history %}
+                        <li class="list-group-item">
+                            {{ entry.user }} changed <strong>{{ entry.field_changed }}</strong> from "{{ entry.old_value }}" to "{{ entry.new_value }}" - {{ entry.timestamp|timesince }} ago
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No edit history recorded.</p>
+            {% endif %}
+        </div>
+    </div>
     <a href="{% url 'patient_list' %}" class="btn btn-custom">Back to List</a>
     <a href="{% url 'edit_patient' patient.pk %}" class="btn btn-custom">Edit Patient</a>
 {% endblock %}

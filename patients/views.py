@@ -1,11 +1,15 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q, Count
+from django.db.models import Q, Count, Avg
 from django.http import JsonResponse
-from .models import Patient, ActionLog
+from .models import Patient, ActionLog, EditHistory
 from .forms import PatientForm
 from collections import Counter
 from datetime import datetime, timedelta
+from django.http import HttpResponse
+import csv
+
+from patients import models
 
 def patient_list(request):
     query = request.GET.get('q', '')
@@ -19,27 +23,23 @@ def patient_list(request):
         )
     else:
         patients = Patient.objects.all()
-    # Recently viewed from session
     recently_viewed_ids = request.session.get('recently_viewed', [])
     recently_viewed = Patient.objects.filter(id__in=recently_viewed_ids)[:5]
-    # Recent actions
     recent_actions = ActionLog.objects.order_by('-timestamp')[:7]
+    total_patients = Patient.objects.count()
+    avg_age = Patient.objects.aggregate(avg_age=Avg('age'))['avg_age'] or 0
+    top_diagnosis = Patient.objects.values('recent_diagnosis').annotate(count=Count('id')).order_by('-count').first()
     return render(request, 'patients/patient_list.html', {
         'patients': patients,
         'query': query,
         'recently_viewed': recently_viewed,
-        'recent_actions': recent_actions
+        'recent_actions': recent_actions,
+        'total_patients': total_patients,
+        'avg_age': round(avg_age, 1),
+        'top_diagnosis': top_diagnosis['recent_diagnosis'] if top_diagnosis else 'N/A'
     })
 
-# def patient_chart(request):
-#     patients = Patient.objects.all()
-#     data = {
-#         'labels': [p.recent_diagnosis for p in patients],
-#         'ages': [p.age for p in patients]
-#     }
-#     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-#         return JsonResponse(data)
-#     return render(request, 'patients/patient_chart.html')
+
 def patient_chart(request):
     patients = Patient.objects.all()
 
@@ -154,21 +154,69 @@ def delete_patient(request, pk):
         return redirect('patient_list')
     return render(request, 'patients/delete_patient.html', {'patient': patient})
 
+
 @login_required
 def patient_detail(request, pk):
     patient = Patient.objects.get(pk=pk)
-    # Update recently viewed in session
     recently_viewed = request.session.get('recently_viewed', [])
     if pk not in recently_viewed:
         recently_viewed.insert(0, pk)
-        request.session['recently_viewed'] = recently_viewed[:5]  # Keep top 5
+        request.session['recently_viewed'] = recently_viewed[:5]
     ActionLog.objects.create(user=request.user, action='viewed', patient_name=patient.name)
     past_diagnoses = patient.past_diagnoses.split(',') if patient.past_diagnoses else []
     past_treatments = patient.past_treatments.split(',') if patient.past_treatments else []
     past_records = list(zip(past_diagnoses, past_treatments)) if past_diagnoses else []
+    edit_history = patient.edit_history.all().order_by('-timestamp')[:5]  # Last 5 edits
     return render(request, 'patients/patient_detail.html', {
         'patient': patient,
-        'past_records': past_records
+        'past_records': past_records,
+        'edit_history': edit_history
     })
-    
 
+
+@login_required
+def edit_patient(request, pk):
+    patient = Patient.objects.get(pk=pk)
+    if request.method == 'POST':
+        form = PatientForm(request.POST, instance=patient)
+        if form.is_valid():
+            old_data = Patient.objects.get(pk=pk).__dict__
+            form.save()
+            new_data = Patient.objects.get(pk=pk).__dict__
+            for field in form.changed_data:
+                ActionLog.objects.create(user=request.user, action='edited', patient_name=patient.name)
+                EditHistory.objects.create(
+                    patient=patient,
+                    user=request.user,
+                    field_changed=field,
+                    old_value=str(old_data.get(field, '')),
+                    new_value=str(new_data.get(field, ''))
+                )
+            return redirect('patient_list')
+    else:
+        form = PatientForm(instance=patient)
+    return render(request, 'patients/edit_patient.html', {'form': form, 'patient': patient})
+
+
+
+@login_required
+def export_patients(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="patients_export.csv"'
+    writer = csv.writer(response)
+    writer.writerow(['Name', 'Age', 'Recent Diagnosis', 'Diagnosis Date', 'Treatment', 'Allergens', 'Past Diagnoses', 'Past Treatments', 'Notes', 'Created At'])
+    for patient in Patient.objects.all():
+        writer.writerow([
+            patient.name,
+            patient.age,
+            patient.recent_diagnosis,
+            patient.diagnosis_date,
+            patient.treatment,
+            patient.allergens,
+            patient.past_diagnoses,
+            patient.past_treatments,
+            patient.notes,
+            patient.created_at
+        ])
+    ActionLog.objects.create(user=request.user, action='exported', patient_name='All Patients')
+    return response

@@ -32,3 +32,16 @@ class ActionLog(models.Model):
     def __str__(self):
         return f"{self.user} {self.action} {self.patient_name} at {self.timestamp}"
  
+ 
+ 
+ 
+class EditHistory(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='edit_history')
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    field_changed = models.CharField(max_length=50)
+    old_value = models.TextField(blank=True)
+    new_value = models.TextField(blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user} changed {self.field_changed} for {self.patient.name}"
